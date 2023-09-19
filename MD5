@@ -1,0 +1,17 @@
+79e047300d04b0e241864d45d6f514df *DESCRIPTION
+76b5e805e48f3f9c0d918e432a0577df *LICENSE
+63597dbc92074c9927ff86b8fdeda7ee *NAMESPACE
+7e426f28f97364216ecdd0ad3e83705c *NEWS.md
+401cc3b6f1a14251f6ac9424e8f2853a *R/FastStepGraph.R
+e594c58ca57cd93afdfd46c30d7c6424 *R/SigmaAR.R
+7e8d78dc51a3cdaed122f09f1c63e4a9 *R/cv.FastStepGraph.R
+a275cb7a91012c0cf61823c5f53058b3 *README.md
+ab77b041bdc8f6de6541d057a27c206c *build/vignette.rds
+0cb97f8aee5cd149357819a9babb8e65 *inst/doc/How_to_use.R
+f1dd206ec3a6def2deedc999eecbdf6d *inst/doc/How_to_use.Rmd
+e099b00e630ac85de6b577f654262b47 *inst/doc/How_to_use.pdf
+c5f06514da558f17278faac24d9ba626 *man/FastStepGraph.Rd
+3301fc4c6f8896e8bcb5fac2a7053ebf *man/SigmaAR.Rd
+3c5099262f29dd98c028aeb1657b58ec *man/cv.FastStepGraph.Rd
+f1dd206ec3a6def2deedc999eecbdf6d *vignettes/How_to_use.Rmd
+e5ed3359ca1229e7c5b1cb360f9408d2 *vignettes/How_to_use.html
