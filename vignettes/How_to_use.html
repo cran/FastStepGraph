@@ -364,12 +364,7 @@ uncomment and run:</p>
 # devtools::install_github(&quot;juancolonna/FastStepGraph&quot;, quiet = TRUE, force = TRUE)
 
 # Then, load it:
-library(FastStepGraph)
-
-# If you directly cloned the github repository, 
-# then you should uncomment these lines to load the functions:
-# source(&#39;FastStepGraph.R&#39;)
-# source(&#39;SigmaAR.R&#39;)</code></pre>
+library(FastStepGraph)</code></pre>
 <p>Simulate Gaussian Data with an Autoregressive (AR) Model:</p>
 <pre class="r"><code>set.seed(1234567)
 phi &lt;- 0.4 
@@ -377,24 +372,35 @@ p &lt;- 50  # number of variables (dimension)
 n &lt;- 30 # number of samples
 
 # Generate Data from a Gaussian distribution 
-data &lt;- FastStepGraph::SigmaAR(n, p, phi)</code></pre>
-<p>Afterwards, fit the Omega matrix by calling the Fast Step Graph
-function, like:</p>
+data &lt;- FastStepGraph::SigmaAR(n, p, phi)
+X &lt;- scale(data$X) # standardizing variables</code></pre>
+<p>To fit the Omega matrix with <code>FastStepGraph()</code> function
+you have to know the optimal values of <span class="math inline">\(\mathbf{\alpha_f}\)</span> and <span class="math inline">\(\mathbf{\alpha_b}\)</span>. If you don’t know
+these values, try to find them using cross-validation as follows:</p>
 <pre class="r"><code>t0 &lt;- Sys.time() # INITIAL TIME
-G &lt;- FastStepGraph::FastStepGraph(data$X, alpha_f = 0.22, alpha_b = 0.14)
+res &lt;- FastStepGraph::cv.FastStepGraph(X, data_shuffle = TRUE)
 difftime(Sys.time(), t0, units = &quot;secs&quot;)
-#&gt; Time difference of 0.07029915 secs
+#&gt; Time difference of 3.148527 secs
+# print(res$alpha_f_opt)
+# print(res$alpha_b_opt)</code></pre>
+<p>If your input variables are non-standardized (with zero mean and unit
+variance), we recommend that you set <code>data_scale=TURE</code>.
+Subsequently, calculate the Omega matrix by calling the
+<code>FastStepGraph()</code> function passing the optimal parameters
+<span class="math inline">\(\mathbf{\alpha_f}\)</span> and <span class="math inline">\(\mathbf{\alpha_b}\)</span> found by
+cross-validation to fit the final model:</p>
+<pre class="r"><code>t0 &lt;- Sys.time() # INITIAL TIME
+G &lt;- FastStepGraph::FastStepGraph(X, alpha_f = res$alpha_f_opt, alpha_b = res$alpha_b_opt)
+difftime(Sys.time(), t0, units = &quot;secs&quot;)
+#&gt; Time difference of 0.00232029 secs
 # print(G$Omega)</code></pre>
-<p>If the <code>nei.max</code> argument is omitted, it will be 5. If you
-don’t know the <code>alpha_f</code> and <code>alpha_b</code> values, the
-use cross-validation. To find the optimal <span class="math inline">\(\mathbf{\alpha_f}\)</span> and <span class="math inline">\(\mathbf{\alpha_b}\)</span> parameters for the
-previously generated <strong>X</strong> data, we can perform a
-cross-validation on a combination grid as follows:</p>
+<p>You can also perform these two steps, the cross-validation to obtain
+the ideal parameters and return the fitted model, in a single step by
+setting the <code>return_model=TRUE</code> option as follows:</p>
 <pre class="r"><code>t0 &lt;- Sys.time() # INITIAL TIME
-res &lt;- FastStepGraph::cv.FastStepGraph(data$X, data_shuffle = FALSE)
+res &lt;- FastStepGraph::cv.FastStepGraph(X, return_model=TRUE, data_shuffle = TRUE)
 difftime(Sys.time(), t0, units = &quot;secs&quot;)
-#&gt; Time difference of 3.377042 secs
-
+#&gt; Time difference of 3.015367 secs
 # print(res$alpha_f_opt)
 # print(res$alpha_b_opt)
 # print(res$Omega)</code></pre>
@@ -404,9 +410,9 @@ difftime(Sys.time(), t0, units = &quot;secs&quot;)
 <code>nei.max = 5</code>, have defaults values and can be omitted. Note
 that, <code>cv.FastStepGraph(X)</code> is not an exhaustive grid search
 over <span class="math inline">\(\mathbf{\alpha_f}\)</span> and <span class="math inline">\(\mathbf{\alpha_b}\)</span>. This is a heuristic
-that always sets <span class="math inline">\(\mathbf{\alpha_b}\)</span>
-= <span class="math inline">\(\frac{\mathbf{\alpha_f}}{2}\)</span>. It
-is recommended to shuffle the rows of <code>X</code> before running
+that tests only a few <span class="math inline">\(\mathbf{\alpha_b}\)</span> values starting with
+the rule <span class="math inline">\(\mathbf{\alpha_b}=\frac{\mathbf{\alpha_f}}{2}\)</span>.
+It is recommended to shuffle the rows of <code>X</code> before running
 cross-validation. The default value is <code>data_shuffle = TRUE</code>,
 but if you want to disable row shuffle, set it to
 <code>data_shuffle = FALSE</code>.</p>
@@ -422,17 +428,16 @@ method setting the parameter <strong>parallel = TRUE</strong>, as
 follows:</p>
 <pre class="r"><code>t0 &lt;- Sys.time() # INITIAL TIME
 # use &#39;n_cores = NULL&#39; to set the maximum number of cores minus one on your machine 
-res &lt;- FastStepGraph::cv.FastStepGraph(data$X, parallel = TRUE, n_cores = 2)
+res &lt;- FastStepGraph::cv.FastStepGraph(X, return_model=TRUE, parallel = TRUE, n_cores = 2)
 difftime(Sys.time(), t0, units = &quot;secs&quot;)
-
 # print(res$alpha_f_opt)
 # print(res$alpha_b_opt)
 # print(res$Omega)</code></pre>
 <p>Remember, you can set the <code>n_cores</code> parameter to a value
-equal to the number of cores you have, but be careful as this may freeze
-your system. Setting it to 1 disables parallel processing, and setting
-it to a number greater than the number of available cores does not
-improve efficiency.</p>
+equal to the number of cores you have, but be careful as this may
+overload your system. Setting it to <code>1</code> disables parallel
+processing, and setting it to a number greater than the number of
+available cores does not improve efficiency.</p>
 <div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>

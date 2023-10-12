@@ -7,7 +7,7 @@
 FastStepGraph(
   x,
   alpha_f,
-  alpha_b = 0,
+  alpha_b = NULL,
   nei.max = 5,
   data_scale = FALSE,
   max.iterations = NULL
@@ -18,13 +18,13 @@ FastStepGraph(
 
 \item{alpha_f}{Forward threshold  (no default value).}
 
-\item{alpha_b}{Backward threshold. If alpha_b=0, then the alpha_b=0.5*alpha_f rule is applied.}
+\item{alpha_b}{Backward threshold. If alpha_b=NULL, then the rule alpha_b <- 0.5*alpha_f is applied.}
 
 \item{nei.max}{Maximum number of variables in every neighborhood (default value 5).}
 
 \item{data_scale}{Boolean parameter (TRUE or FALSE), when to scale data to zero mean and unit variance (default FALSE).}
 
-\item{max.iterations}{Maximum number of iterations (integer), defaults set to three times the combination C(p,2)= p!/(2! * (p-2)!)}
+\item{max.iterations}{Maximum number of iterations (integer), the defaults values is set to p*(p-1).}
 }
 \value{
 A list with the values:
@@ -38,7 +38,7 @@ Improved and faster implementation of the Stepwise Gaussian Graphical Algorithm.
 }
 \examples{
 data <- FastStepGraph::SigmaAR(30, 50, 0.4) # Simulate Gaussian Data
-G <- FastStepGraph::FastStepGraph(data$X, alpha_f = 0.22, alpha_b = 0.14)
+G <- FastStepGraph::FastStepGraph(data$X, alpha_f = 0.22, alpha_b = 0.14, data_scale=TRUE)
 }
 \author{
 Prof. Juan G. Colonna, PhD. \email{juancolonna@icomp.ufam.edu.br}
